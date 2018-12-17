@@ -42,6 +42,7 @@ void *subp1() {
         printf("%d\n", sum);
         V(mySemid, 1);
     }
+    exit(0);
 }
 
 void *subp2() {
@@ -51,6 +52,7 @@ void *subp2() {
         sum += i;
         V(mySemid, 0);
     }
+    exit(0);
 }
 
 int main() {
