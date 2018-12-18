@@ -31,7 +31,7 @@ int main() {
 	char msg[50];
 
 	if ((pid1 = fork()) == -1);
-	else if ((pid1 = fork()) == 0)
+	else if (pid1 == 0)
 	{//p1进程
 		signal(SIGINT, SIG_IGN);
 		signal(SIGUSR1, pid1Killed);
@@ -46,7 +46,7 @@ int main() {
 		}
 	}
     else if((pid2 = fork()) == -1);
-	else if ((pid2 = fork()))
+	else if (pid2 == 0)
 	{//p2进程
 		signal(SIGINT, SIG_IGN);
 		signal(SIGUSR2, pid2Killed);

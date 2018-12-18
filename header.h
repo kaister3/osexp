@@ -1,25 +1,28 @@
 #ifndef HEADER_INCLUDED
 #define HEADER_INCLUDED
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <pthread.h>
 #include <sys/types.h>
-#include <sys/shm.h>
 #include <sys/sem.h>
-#include <sys/wait.h>
+#include <stdio.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <stdlib.h>
 
-#define BUF_SIZE 1024//单个缓冲区的大小
+#define BUF_SIZE 128//单个缓冲区的大小
+#define leng 10
 
-const key_t semkey = 0x2234;//?网上说必须是32位整数
-key_t shmkey = 234;
+const key_t shmkey = 0x2234;//?网上说必须是32位整数
+key_t semkey = 1;
 
-typedef struct shareMemory{
-    char data[10][BUF_SIZE];
-    int length[10];
-    int stop;
-}shareMemory;
+typedef struct ShareMemory{
+    char data[leng][BUF_SIZE];
+    int length[leng];//每个缓冲区读取的长度
+    int stop[leng];
+}ShareMemory;//共享内存
 
 union senum{
     int val;
@@ -27,22 +30,24 @@ union senum{
     unsigned short *array;
 };
 
-void P(int semid, int index) {
-    struct sembuf sem;
-    sem.sem_num = index;
-    sem.sem_op = -1;//获取一个资源
-    sem.sem_flg = 0;//若资源数量不满足则阻塞
-    semop(semid, &sem, 1);
-    return;
+/*P操作*/
+void P(int semid, int index){
+	struct sembuf sem;
+	sem.sem_num = index;
+	sem.sem_op = -1;
+	sem.sem_flg = 0;
+	semop(semid, &sem, 1);
+	return;
 }
 
-void V(int semid, int index) {
-    struct sembuf sem;
-    sem.sem_num = index;
-    sem.sem_op = 1;//释放一个资源
-    sem.sem_flg = 0;//若资源数量不满足则阻塞
-    semop(semid, &sem, 1);
-    return;
+/*V操作*/
+void V(int semid, int index){
+	struct sembuf sem;
+	sem.sem_num = index;
+	sem.sem_op = 1;
+	sem.sem_flg = 0;
+	semop(semid, &sem, 1);
+	return;
 }
 
 #endif
